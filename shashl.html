@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шашлык 10 мая · Белое озеро</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Unbounded:wght@300;400;700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══ НАСТРОЙКИ БД ══
+   Замени FIREBASE_URL ниже на твою Firebase Realtime DB.
+   Инструкция: см. блок script внизу страницы. */
+
+:root {
+  --fire:   #ff6b1a;
+  --ember:  #ff3d00;
+  --gold:   #f5a623;
+  --cream:  #fdf6ed;
+  --dark:   #1a1208;
+  --text:   #f0e8d8;
+  --muted:  #a89880;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;}
+
+/* ─── HERO ─── */
+.hero{position:relative;height:100vh;min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:url('place.jpg') center 60%/cover no-repeat;animation:kzoom 22s ease-in-out infinite alternate;}
+@keyframes kzoom{from{transform:scale(1.05)}to{transform:scale(1.13) translateY(-2%)}}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,6,2,.32) 0%,rgba(26,18,8,.6) 40%,rgba(26,18,8,.88) 72%,var(--dark) 100%);}
+.sparks{position:absolute;bottom:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:hidden;}
+.sp{position:absolute;bottom:-10px;border-radius:50%;animation:spup linear infinite;opacity:0;}
+@keyframes spup{0%{transform:translateY(0) translateX(0) scale(1);opacity:.85;}100%{transform:translateY(-70vh) translateX(var(--dr)) scale(0);opacity:0;}}
+.hero-c{position:relative;z-index:3;text-align:center;padding:0 20px;max-width:900px;width:100%;}
+.eyebrow{font-family:'Unbounded',sans-serif;font-size:clamp(10px,1.4vw,13px);font-weight:300;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;opacity:0;animation:fi 1s .3s forwards;display:block;}
+.htitle{font-family:'Playfair Display',serif;font-size:clamp(54px,10vw,118px);font-weight:900;line-height:.9;color:var(--cream);text-shadow:0 4px 40px rgba(255,107,26,.4);margin-bottom:16px;opacity:0;animation:fi 1s .6s forwards;letter-spacing:-2px;}
+.htitle span{color:var(--fire);}
+.hdate{font-family:'Unbounded',sans-serif;font-size:clamp(12px,2vw,17px);color:var(--muted);letter-spacing:3px;margin-bottom:50px;opacity:0;animation:fi 1s .9s forwards;display:block;}
+@keyframes fi{to{opacity:1}}
+
+.countdown{display:flex;gap:clamp(8px,2.5vw,28px);justify-content:center;margin-bottom:40px;opacity:0;animation:fi 1s 1.2s forwards;}
+.cdb{text-align:center;}
+.cdn{font-family:'Playfair Display',serif;font-size:clamp(36px,7vw,78px);font-weight:700;color:var(--cream);line-height:1;display:block;min-width:clamp(68px,10vw,108px);background:rgba(255,255,255,.05);border:1px solid rgba(255,107,26,.22);border-radius:16px;padding:16px 10px 12px;backdrop-filter:blur(10px);position:relative;overflow:hidden;}
+.cdn::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--fire),transparent);animation:sc 3s linear infinite;}
+@keyframes sc{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.cdl{font-family:'Unbounded',sans-serif;font-size:clamp(8px,1.1vw,11px);font-weight:300;letter-spacing:3px;color:var(--muted);margin-top:8px;text-transform:uppercase;display:block;}
+.hscroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:fi 1s 2s forwards;}
+.sline{width:1px;height:48px;background:linear-gradient(to bottom,var(--gold),transparent);animation:sp2 2s ease-in-out infinite;}
+@keyframes sp2{0%,100%{opacity:.3}50%{opacity:1}}
+.stxt{font-family:'Unbounded',sans-serif;font-size:9px;letter-spacing:3px;color:var(--muted);writing-mode:vertical-rl;}
+
+/* ─── NAV ─── */
+nav{position:sticky;top:0;z-index:100;background:rgba(26,18,8,.93);backdrop-filter:blur(20px);border-bottom:1px solid rgba(245,166,35,.14);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.nlogo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--fire);}
+.nlinks{display:flex;gap:26px;list-style:none;}
+.nlinks a{font-family:'Unbounded',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
+.nlinks a:hover{color:var(--gold);}
+.mbtn{background:none;border:1px solid rgba(245,166,35,.3);border-radius:99px;padding:6px 14px;font-family:'Unbounded',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.mbtn:hover{background:rgba(245,166,35,.1);border-color:var(--gold);}
+.mwaves{display:flex;gap:2px;align-items:center;height:14px;}
+.mwaves span{display:block;width:2px;background:var(--gold);border-radius:2px;animation:wv .8s ease-in-out infinite alternate;}
+.mwaves span:nth-child(1){height:4px;animation-delay:0s}
+.mwaves span:nth-child(2){height:10px;animation-delay:.15s}
+.mwaves span:nth-child(3){height:6px;animation-delay:.3s}
+.mwaves span:nth-child(4){height:12px;animation-delay:.1s}
+.mwaves span:nth-child(5){height:5px;animation-delay:.25s}
+@keyframes wv{from{transform:scaleY(.4)}to{transform:scaleY(1)}}
+.mwaves.paused span{animation-play-state:paused;}
+
+/* ─── SECTIONS ─── */
+section{max-width:1200px;margin:0 auto;padding:80px 40px;}
+.stag{font-family:'Unbounded',sans-serif;font-size:10px;font-weight:300;letter-spacing:5px;text-transform:uppercase;color:var(--fire);margin-bottom:12px;display:block;}
+.stitle{font-family:'Playfair Display',serif;font-size:clamp(30px,5vw,58px);font-weight:700;color:var(--cream);line-height:1.1;margin-bottom:14px;letter-spacing:-1px;}
+.slead{font-size:clamp(14px,1.7vw,17px);color:var(--muted);line-height:1.7;max-width:600px;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(245,166,35,.28),transparent);margin:0 40px;}
+
+/* ─── PLACE ─── */
+.place-wrap{position:relative;overflow:hidden;}
+.place-img{width:100%;height:clamp(300px,48vw,580px);object-fit:cover;object-position:center 60%;display:block;filter:brightness(.84) saturate(1.2);}
+.place-ov{position:absolute;inset:0;background:linear-gradient(to right,rgba(26,18,8,.9) 0%,rgba(26,18,8,.22) 55%,rgba(26,18,8,.08) 100%);display:flex;align-items:center;padding:60px;}
+.place-txt{max-width:480px;}
+.ptitle{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,50px);font-weight:700;color:var(--cream);line-height:1.1;margin-bottom:10px;}
+.ptitle span{color:var(--fire);}
+.paddr{font-size:14px;color:var(--gold);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.pdesc{font-size:15px;color:var(--muted);line-height:1.7;}
+.pbadge{display:inline-flex;align-items:center;gap:8px;background:var(--fire);border-radius:99px;padding:8px 20px;margin-top:18px;font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;color:#fff;}
+
+/* ─── CREW ─── */
+.crew-bg{background:linear-gradient(135deg,#1f1508,#2a1a08);border-top:1px solid rgba(255,107,26,.1);border-bottom:1px solid rgba(255,107,26,.1);}
+.crew-grid{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;}
+.cc{flex:1;min-width:130px;max-width:170px;background:rgba(255,255,255,.03);border:1px solid rgba(255,166,35,.12);border-radius:18px;padding:22px 14px;text-align:center;transition:all .3s;}
+.cc:hover{border-color:rgba(255,107,26,.4);transform:translateY(-4px);}
+.cav{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--fire),var(--gold));display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;border:2px solid rgba(255,166,35,.3);}
+.cname{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream);}
+.crole{font-size:11px;color:var(--muted);margin-top:3px;}
+.cav img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 40%; /* круглая аватарка */
+}
+
+/* ─── POLL ─── */
+.poll-bg{background:linear-gradient(135deg,#1f1508,#2d1a08);border-top:1px solid rgba(255,107,26,.1);border-bottom:1px solid rgba(255,107,26,.1);}
+.poll-inner{max-width:1200px;margin:0 auto;padding:80px 40px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.popts{display:flex;flex-direction:column;gap:11px;margin-top:32px;}
+.popt{display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,107,26,.15);border-radius:12px;padding:13px 16px;cursor:pointer;transition:all .2s;user-select:none;}
+.popt:hover{border-color:rgba(255,107,26,.4);background:rgba(255,107,26,.05);}
+.popt.sel{border-color:var(--fire);background:rgba(255,107,26,.1);}
+.pchk{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.popt.sel .pchk{background:var(--fire);border-color:var(--fire);}
+.popt.sel .pchk::after{opacity:1;}
+.pchk::after{content:'✓';font-size:13px;color:#fff;opacity:0;transition:opacity .15s;}
+.pemoji{font-size:22px;}
+.ptxt{font-size:15px;font-weight:600;color:var(--text);flex:1;}
+.vbtn{margin-top:18px;width:100%;padding:16px;background:linear-gradient(135deg,var(--fire),var(--ember));border:none;border-radius:12px;font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(255,107,26,.35);}
+.vbtn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,107,26,.5);}
+.vbtn:active{transform:none;}
+.vbtn:disabled{opacity:.5;cursor:default;transform:none;}
+.rtitle{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--cream);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.vcnt{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:300;color:var(--muted);}
+.rbar{margin-bottom:16px;}
+.rbartop{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.rbarl{font-size:13px;font-weight:600;color:var(--text);}
+.rbarp{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold);}
+.rtrack{height:8px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;}
+.rfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--fire),var(--gold));transition:width .7s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(255,107,26,.5);}
+.syncst{font-size:11px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:7px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:#44cc66;display:inline-block;animation:dp 2s infinite;}
+.sdot.off{background:#cc4444;animation:none;}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ─── FACTS ─── */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px;margin-top:44px;}
+.fc{background:rgba(255,255,255,.03);border:1px solid rgba(255,166,35,.1);border-radius:20px;padding:26px;position:relative;overflow:hidden;transition:transform .3s,border-color .3s;}
+.fc:hover{transform:translateY(-4px);border-color:rgba(255,107,26,.3);}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--fire),var(--gold));opacity:0;transition:opacity .3s;}
+.fc:hover::before{opacity:1;}
+.fnum{font-family:'Playfair Display',serif;font-size:54px;font-weight:900;color:rgba(255,107,26,.1);line-height:1;position:absolute;top:14px;right:18px;}
+.ficon{font-size:30px;margin-bottom:14px;display:block;}
+.ftitle{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--cream);margin-bottom:9px;line-height:1.3;}
+.ftext{font-size:14px;color:var(--muted);line-height:1.7;}
+.ftext b{color:var(--text);}
+
+/* ─── MARINADES ─── */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:26px;margin-top:44px;}
+.mc{background:rgba(255,255,255,.03);border:1px solid rgba(255,166,35,.1);border-radius:22px;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.mc:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(255,107,26,.14);}
+.mh{padding:22px 26px 18px;background:linear-gradient(135deg,rgba(255,107,26,.12),rgba(26,18,8,0));border-bottom:1px solid rgba(255,166,35,.1);display:flex;align-items:flex-start;gap:14px;}
+.memo{font-size:34px;flex-shrink:0;margin-top:2px;}
+.mname{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--cream);margin-bottom:3px;}
+.msub{font-size:11px;color:var(--fire);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.mb{padding:22px 26px;}
+.mtime{display:flex;gap:18px;margin-bottom:16px;}
+.mti{display:flex;flex-direction:column;gap:2px;}
+.mtil{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.mtiv{font-size:15px;font-weight:700;color:var(--gold);}
+.ings{list-style:none;margin-bottom:14px;}
+.ings li{font-size:13px;color:var(--muted);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:flex-start;gap:8px;line-height:1.4;}
+.ings li::before{content:'—';color:var(--fire);font-weight:700;flex-shrink:0;}
+.ings li b{color:var(--text);}
+.mtip{font-size:13px;color:var(--muted);background:rgba(255,107,26,.06);border-left:3px solid var(--fire);border-radius:0 8px 8px 0;padding:9px 13px;line-height:1.6;margin-bottom:14px;}
+.mtip b{color:var(--text);}
+.sbadge{display:inline-flex;align-items:center;background:linear-gradient(135deg,var(--gold),var(--fire));border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:1px;color:#000;margin-bottom:8px;}
+
+/* marinade vote */
+.mvsec{border-top:1px solid rgba(255,255,255,.05);padding-top:14px;}
+.mvlabel{font-size:12px;color:var(--muted);margin-bottom:9px;font-weight:600;}
+.mvbtn{width:100%;padding:11px;background:rgba(255,107,26,.1);border:1px solid rgba(255,107,26,.3);border-radius:10px;font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--fire);cursor:pointer;transition:all .2s;}
+.mvbtn:hover{background:rgba(255,107,26,.2);border-color:var(--fire);}
+.mvbtn:disabled{opacity:.5;cursor:default;}
+.mvbtn.voted{background:rgba(255,107,26,.15);color:var(--gold);border-color:var(--gold);}
+.mresult{margin-top:11px;}
+.mresult .rtrack{height:6px;margin-top:5px;}
+.mresult-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* ─── RULES ─── */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px;margin-top:36px;}
+.rcard{text-align:center;padding:28px 18px;background:rgba(255,255,255,.02);border:1px solid rgba(255,166,35,.08);border-radius:17px;}
+.ricon{font-size:38px;margin-bottom:12px;display:block;}
+.rtext{font-size:15px;font-weight:600;color:var(--cream);line-height:1.4;}
+.rsub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* ─── SETUP BANNER ─── */
+.setup-banner{background:rgba(255,107,26,.08);border:1px solid rgba(255,107,26,.3);border-radius:14px;padding:18px 22px;margin-top:24px;display:none;}
+.setup-banner h4{color:var(--gold);font-size:14px;margin-bottom:8px;}
+.setup-banner p{font-size:13px;color:var(--muted);line-height:1.7;}
+.setup-banner a{color:var(--fire);text-decoration:none;}
+.setup-banner code{background:rgba(255,255,255,.08);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--cream);}
+
+footer{background:#0d0d08;border-top:1px solid rgba(255,166,35,.1);padding:50px 40px;text-align:center;}
+.ftitle2{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--fire);margin-bottom:8px;}
+.fsub{font-size:14px;color:var(--muted);margin-bottom:28px;}
+.fdate{font-family:'Unbounded',sans-serif;font-size:12px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;}
+
+@media(max-width:900px){
+  .poll-inner{grid-template-columns:1fr;gap:36px;padding:60px 20px;}
+  .place-ov{padding:28px;}
+  nav{padding:0 20px;}
+  .nlinks{display:none;}
+  section{padding:60px 20px;}
+}
+@media(max-width:600px){
+  .countdown{gap:7px;}
+  .cdn{min-width:58px;font-size:34px;padding:12px 8px 10px;}
+  .place-ov{background:linear-gradient(to bottom,rgba(26,18,8,.3),rgba(26,18,8,.93));align-items:flex-end;padding:22px 18px;}
+  .crew-grid{justify-content:center;}
+  footer{padding:36px 18px;}
+}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease;}
+.reveal.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<audio id="music" loop preload="none">
+  <source src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Acoustic%20Breeze.mp3" type="audio/mpeg">
+</audio>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ov"></div>
+  <div class="sparks" id="sparks"></div>
+  <div class="hero-c">
+    <span class="eyebrow">Белое озеро · 10 мая 2026 · 12:00</span>
+    <h1 class="htitle">Шаш<span>лык</span><br>Season</h1>
+    <span class="hdate">открытие сезона · 2026</span>
+    <div class="countdown">
+      <div class="cdb"><span class="cdn" id="cd-d">--</span><span class="cdl">дней</span></div>
+      <div class="cdb"><span class="cdn" id="cd-h">--</span><span class="cdl">часов</span></div>
+      <div class="cdb"><span class="cdn" id="cd-m">--</span><span class="cdl">минут</span></div>
+    </div>
+  </div>
+  <div class="hscroll"><div class="sline"></div><span class="stxt">scroll</span></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nlogo">🔥 Шашлык</div>
+  <ul class="nlinks">
+    <li><a href="#crew">Команда</a></li>
+    <li><a href="#poll">Голосование</a></li>
+    <li><a href="#facts">Факты</a></li>
+    <li><a href="#marinades">Маринады</a></li>
+  </ul>
+  <button class="mbtn" onclick="toggleMusic()">
+    <span>♪</span><span id="mlbl">Музыка</span>
+    <div class="mwaves paused" id="mwaves"><span></span><span></span><span></span><span></span><span></span></div>
+  </button>
+</nav>
+
+<!-- PLACE -->
+<div class="place-wrap reveal">
+  <img class="place-img" src="place.jpg" alt="Белое озеро">
+  <div class="place-ov">
+    <div class="place-txt">
+      <span class="stag">место встречи</span>
+      <div class="ptitle">Белое<br><span>Озеро.</span></div>
+      <div class="paddr">📍 Большая Косинская ул., 45, Москва</div>
+      <p class="pdesc">Вода, деревья, свежий воздух и запах дыма над озером. Именно здесь 10 мая разгорится наш мангал.</p>
+      <div class="pbadge">10 мая · 12:00 · все свои</div>
+    </div>
+  </div>
+</div>
+
+<!-- CREW -->
+<section id="crew" class="crew-bg">
+  <div class="reveal">
+    <span class="stag">состав участников</span>
+    <h2 class="stitle">Наша банда</h2>
+    <p class="slead">Слева направо.</p>
+  </div>
+  <div class="crew-grid reveal">
+    <div class="cc">
+        <div class="cav"><img src="alex.jpg" alt="Александр"></div>
+        <div class="cname">Александр</div>
+        <div class="crole">Главный у мангала</div>
+    </div>
+
+    <div class="cc">
+        <div class="cav"><img src="ksenia.jpg" alt="Ксения"></div>
+        <div class="cname">Ксения</div>
+        <div class="crole">Отвечает за салаты</div>
+    </div>
+
+    <div class="cc">
+        <div class="cav"><img src="stas.jpg" alt="Станислав"></div>
+        <div class="cname">Станислав</div>
+        <div class="crole">Знаток маринадов</div>
+    </div>
+
+    <div class="cc">
+        <div class="cav"><img src="alina.jpg" alt="Алина"></div>
+        <div class="cname">Алина</div>
+        <div class="crole">Хранитель атмосферы</div>
+    </div>
+
+    <div class="cc">
+        <div class="cav"><img src="liza.jpg" alt="Лиза"></div>
+        <div class="cname">Лиза</div>
+        <div class="crole">Фотограф вечера</div>
+    </div>
+
+    <div class="cc">
+        <div class="cav"><img src="matvey.jpg" alt="Матвей"></div>
+        <div class="cname">Матвей</div>
+        <div class="crole">Подносит дрова</div>
+    </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- POLL -->
+<div class="poll-bg" id="poll">
+  <div class="poll-inner">
+    <div class="reveal">
+      <span class="stag">важный вопрос</span>
+      <h2 class="stitle">Что берём<br>на мангал?</h2>
+      <p class="slead">Выбери варианты — можно несколько. Голоса всех участников суммируются и видны всем.</p>
+      <div class="popts">
+        <div class="popt" data-id="0" onclick="togglePoll(0)"><div class="pchk"></div><span class="pemoji">🐷</span><span class="ptxt">Только свинину</span></div>
+        <div class="popt" data-id="1" onclick="togglePoll(1)"><div class="pchk"></div><span class="pemoji">🐷🍗</span><span class="ptxt">Свинину и куру</span></div>
+        <div class="popt" data-id="2" onclick="togglePoll(2)"><div class="pchk"></div><span class="pemoji">🐷🫀</span><span class="ptxt">Свинину и печень в сетке</span></div>
+        <div class="popt" data-id="3" onclick="togglePoll(3)"><div class="pchk"></div><span class="pemoji">🍗</span><span class="ptxt">Только куру</span></div>
+        <div class="popt" data-id="4" onclick="togglePoll(4)"><div class="pchk"></div><span class="pemoji">💨</span><span class="ptxt">Курдюк — чтобы подымить</span></div>
+      </div>
+      <button class="vbtn" id="pollBtn" onclick="submitPoll()">🔥 Проголосовать</button>
+      <div class="setup-banner" id="setupBanner">
+        <h4>⚙️ Нужна настройка для общих голосов</h4>
+        <p>Чтобы голоса всех участников суммировались, нужно создать бесплатную Firebase БД (1 минута):<br><br>
+        1. Зайди на <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a><br>
+        2. Создай проект → Realtime Database → «Начать в тестовом режиме»<br>
+        3. Скопируй URL базы (вида <code>https://xxx.firebaseio.com</code>)<br>
+        4. Открой файл <code>shashlik.html</code>, найди строку <code>var FIREBASE_URL</code> и вставь свой URL<br><br>
+        До настройки голоса сохраняются только на твоём устройстве.
+        </p>
+      </div>
+      <div class="syncst"><span class="sdot" id="sdot"></span><span id="stxt">Подключение...</span></div>
+    </div>
+    <div class="reveal" style="transition-delay:.2s">
+      <div class="rtitle">Результаты <span class="vcnt" id="ptotal">0 голосов</span></div>
+      <div id="pollRes"></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FACTS -->
+<section id="facts">
+  <div class="reveal">
+    <span class="stag">история и культура</span>
+    <h2 class="stitle">Шашлык —<br>это наука</h2>
+    <p class="slead">Не барбекю, не гриль, не жаркое. Именно шашлык — со своими законами и тонкостями.</p>
+  </div>
+  <div class="fgrid">
+    <div class="fc reveal"><span class="fnum">01</span><span class="ficon">🕰️</span><div class="ftitle">Слово из тюркского</div><p class="ftext">«Шашлык» — от <b>«шиш»</b> (вертел). Буквально — «то, что на вертеле». Отдельная кавказская культура, не путать с kebab или барбекью.</p></div>
+    <div class="fc reveal"><span class="fnum">02</span><span class="ficon">🌡️</span><div class="ftitle">Жар — 250–300°C</div><p class="ftext">Идеал — угли с <b>седым пеплом</b> и жаром 250–300°C. Открытый огонь сжигает снаружи, оставляет сырым внутри.</p></div>
+    <div class="fc reveal"><span class="fnum">03</span><span class="ficon">🐷</span><div class="ftitle">Шея — золотой стандарт</div><p class="ftext"><b>Жировые прожилки</b> тают при жарке, делая мясо сочным изнутри. Без них — сухо как подошва.</p></div>
+    <div class="fc reveal"><span class="fnum">04</span><span class="ficon">🧅</span><div class="ftitle">Лук — главный ингредиент</div><p class="ftext">Луковые ферменты разрушают <b>жёсткие белковые волокна</b>. Именно лук, а не уксус, делает шашлык нежным.</p></div>
+    <div class="fc reveal"><span class="fnum">05</span><span class="ficon">🔄</span><div class="ftitle">Поворачивать раз в 2–3 мин</div><p class="ftext">Частые повороты — ошибка. Корочке нужно время <b>схватиться</b>, иначе сок вытечет.</p></div>
+    <div class="fc reveal"><span class="fnum">06</span><span class="ficon">🌿</span><div class="ftitle">Дрова меняют вкус</div><p class="ftext"><b>Фруктовые</b> (вишня, яблоня) — ароматный дым. Хвойные — никогда: смола горчит.</p></div>
+    <div class="fc reveal"><span class="fnum">07</span><span class="ficon">⏱️</span><div class="ftitle">Маринад — не для вкуса</div><p class="ftext">Главная задача — <b>размягчить белок</b> и удержать влагу. Лучшие маринады — простые.</p></div>
+    <div class="fc reveal"><span class="fnum">08</span><span class="ficon">🫀</span><div class="ftitle">Печень в сетке — деликатес</div><p class="ftext">Сальник (жировая сетка) тает на жару, обволакивает печень и <b>не даёт ей пересохнуть</b>.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MARINADES -->
+<section id="marinades">
+  <div class="reveal">
+    <span class="stag">рецепты · голосование</span>
+    <h2 class="stitle">Маринады<br>для шеи</h2>
+    <p class="slead">Нажми «Хочу этот» — проголосуй за маринад на вылазку. Все голоса суммируются.</p>
+  </div>
+  <div class="mgrid">
+
+    <div class="mc reveal">
+      <div class="mh"><span class="memo">🧅</span><div><div class="sbadge">★ КЛАССИКА</div><div class="mname">Луковый</div><div class="msub">Самый проверенный</div></div></div>
+      <div class="mb">
+        <div class="mtime"><div class="mti"><span class="mtil">Маринование</span><span class="mtiv">4–8 ч</span></div><div class="mti"><span class="mtil">Мясо</span><span class="mtiv">2 кг шеи</span></div></div>
+        <ul class="ings"><li><b>1 кг</b> лука — натереть или пробить блендером</li><li><b>1.5 ч.л.</b> крупной соли</li><li><b>1 ч.л.</b> чёрного перца</li><li><b>1 ч.л.</b> паприки, <b>2 ст.л.</b> масла</li><li><b>3–4</b> лавровых листа</li></ul>
+        <div class="mtip"><b>Секрет:</b> лук перетирать руками с мясом — выдавить максимум сока.</div>
+        <div class="mvsec"><div class="mvlabel">🗳️ Хочешь этот маринад?</div><button class="mvbtn" data-mid="0" onclick="voteM(0)">Хочу этот 🔥</button><div class="mresult" id="mr0"></div></div>
+      </div>
+    </div>
+
+    <div class="mc reveal">
+      <div class="mh"><span class="memo">🍋</span><div><div class="sbadge">★ НЕЖНЫЙ</div><div class="mname">Минеральный</div><div class="msub">Быстро и мягко</div></div></div>
+      <div class="mb">
+        <div class="mtime"><div class="mti"><span class="mtil">Маринование</span><span class="mtiv">2–4 ч</span></div><div class="mti"><span class="mtil">Мясо</span><span class="mtiv">2 кг шеи</span></div></div>
+        <ul class="ings"><li><b>500 мл</b> газированной минеральной воды</li><li><b>3 луковицы</b> кольцами</li><li><b>1 лимон</b> — сок (добавить за час до жарки)</li><li><b>1.5 ч.л.</b> соли, <b>1 ч.л.</b> смеси перцев</li><li>кориандр, зира по вкусу</li></ul>
+        <div class="mtip"><b>Секрет:</b> пузырьки разрыхляют волокна механически. Лимон — только в последний час.</div>
+        <div class="mvsec"><div class="mvlabel">🗳️ Хочешь этот маринад?</div><button class="mvbtn" data-mid="1" onclick="voteM(1)">Хочу этот 🔥</button><div class="mresult" id="mr1"></div></div>
+      </div>
+    </div>
+
+    <div class="mc reveal">
+      <div class="mh"><span class="memo">🫙</span><div><div class="sbadge">★ КАВКАЗСКИЙ</div><div class="mname">На томате</div><div class="msub">Корочка как в горах</div></div></div>
+      <div class="mb">
+        <div class="mtime"><div class="mti"><span class="mtil">Маринование</span><span class="mtiv">6–12 ч</span></div><div class="mti"><span class="mtil">Мясо</span><span class="mtiv">2 кг шеи</span></div></div>
+        <ul class="ings"><li><b>300 мл</b> натурального томатного сока</li><li><b>3 луковицы</b>, <b>3 зубчика</b> чеснока</li><li><b>1 ч.л.</b> хмели-сунели</li><li><b>1 ч.л.</b> копчёной паприки</li><li>соль, перец, <b>2 ст.л.</b> оливкового масла</li></ul>
+        <div class="mtip"><b>Секрет:</b> сахар томата карамелизуется на углях — даёт тёмную ароматную корочку.</div>
+        <div class="mvsec"><div class="mvlabel">🗳️ Хочешь этот маринад?</div><button class="mvbtn" data-mid="2" onclick="voteM(2)">Хочу этот 🔥</button><div class="mresult" id="mr2"></div></div>
+      </div>
+    </div>
+
+    <div class="mc reveal">
+      <div class="mh"><span class="memo">🥛</span><div><div class="sbadge">★ СОЧНЫЙ</div><div class="mname">Кефирный</div><div class="msub">Максимальная нежность</div></div></div>
+      <div class="mb">
+        <div class="mtime"><div class="mti"><span class="mtil">Маринование</span><span class="mtiv">8–12 ч</span></div><div class="mti"><span class="mtil">Мясо</span><span class="mtiv">2 кг шеи</span></div></div>
+        <ul class="ings"><li><b>500 мл</b> кефира 3.2%</li><li><b>2 луковицы</b>, <b>4 зубчика</b> чеснока</li><li>пучок кинзы или петрушки</li><li><b>1 ч.л.</b> зиры, <b>1 ч.л.</b> перца, <b>1.5 ч.л.</b> соли</li></ul>
+        <div class="mtip"><b>Секрет:</b> молочная кислота делает мясо тающим. Жарить осторожно — быстро горит.</div>
+        <div class="mvsec"><div class="mvlabel">🗳️ Хочешь этот маринад?</div><button class="mvbtn" data-mid="3" onclick="voteM(3)">Хочу этот 🔥</button><div class="mresult" id="mr3"></div></div>
+      </div>
+    </div>
+
+    <div class="mc reveal">
+      <div class="mh"><span class="memo">🍺</span><div><div class="sbadge">★ МУЖСКОЙ</div><div class="mname">Пивной</div><div class="msub">С дымком и хмелем</div></div></div>
+      <div class="mb">
+        <div class="mtime"><div class="mti"><span class="mtil">Маринование</span><span class="mtiv">3–5 ч</span></div><div class="mti"><span class="mtil">Мясо</span><span class="mtiv">2 кг шеи</span></div></div>
+        <ul class="ings"><li><b>500 мл</b> тёмного нефильтрованного пива</li><li><b>3 луковицы</b>, <b>1 ч.л.</b> зернистой горчицы</li><li><b>1 ч.л.</b> перца, <b>1 ч.л.</b> паприки</li><li><b>3 ст.л.</b> масла, соль по вкусу</li></ul>
+        <div class="mtip"><b>Секрет:</b> тёмное пиво даёт солодовый аромат и балансирует жирность шеи.</div>
+        <div class="mvsec"><div class="mvlabel">🗳️ Хочешь этот маринад?</div><button class="mvbtn" data-mid="4" onclick="voteM(4)">Хочу этот 🔥</button><div class="mresult" id="mr4"></div></div>
+      </div>
+    </div>
+
+    <div class="mc reveal">
+      <div class="mh"><span class="memo">🌶️</span><div><div class="sbadge">★ ОГНЕННЫЙ</div><div class="mname">Острый кавказский</div><div class="msub">Для смелых</div></div></div>
+      <div class="mb">
+        <div class="mtime"><div class="mti"><span class="mtil">Маринование</span><span class="mtiv">6–10 ч</span></div><div class="mti"><span class="mtil">Мясо</span><span class="mtiv">2 кг шеи</span></div></div>
+        <ul class="ings"><li><b>1 кг</b> лука натёртого</li><li><b>1 стручок</b> чили, <b>5 зубчиков</b> чеснока</li><li><b>1 ч.л.</b> аджики сухой, кориандра, зиры</li><li><b>3 ст.л.</b> оливкового масла, соль щедро</li></ul>
+        <div class="mtip"><b>Секрет:</b> перец добавлять целым. Острота не должна перебивать вкус мяса.</div>
+        <div class="mvsec"><div class="mvlabel">🗳️ Хочешь этот маринад?</div><button class="mvbtn" data-mid="5" onclick="voteM(5)">Хочу этот 🔥</button><div class="mresult" id="mr5"></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RULES -->
+<section id="rules">
+  <div class="reveal"><span class="stag">кодекс</span><h2 class="stitle">Законы шашлычника</h2></div>
+  <div class="rgrid">
+    <div class="rcard reveal"><span class="ricon">🔥</span><div class="rtext">Не торопить мангал</div><div class="rsub">Угли ждут своего часа</div></div>
+    <div class="rcard reveal"><span class="ricon">🍺</span><div class="rtext">Пиво до и во время</div><div class="rsub">Никогда не после</div></div>
+    <div class="rcard reveal"><span class="ricon">🧅</span><div class="rtext">Лук замочен заранее</div><div class="rsub">Мариновать с вечера</div></div>
+    <div class="rcard reveal"><span class="ricon">💨</span><div class="rtext">Дым — это аромат</div><div class="rsub">Не разгонять, а вдыхать</div></div>
+    <div class="rcard reveal"><span class="ricon">🕐</span><div class="rtext">Сбор в 12:00</div><div class="rsub">10 мая, без опозданий</div></div>
+    <div class="rcard reveal"><span class="ricon">♟️</span><div class="rtext">Мангал у главного</div><div class="rsub">Советчики — в сторону</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="ftitle2">🔥 10 мая 2026</div>
+  <div class="fsub">Белое озеро · Большая Косинская, 45 · 12:00</div>
+  <div class="fdate">Шашлычный сезон открыт</div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════
+   НАСТРОЙКА: вставь сюда URL своей Firebase Realtime Database
+   Пример: 'https://shashlik-2026-default-rtdb.firebaseio.com'
+   Как получить: console.firebase.google.com → Create project →
+   Build → Realtime Database → Create Database → Test mode → скопируй URL
+   ════════════════════════════════════════ */
+var FIREBASE_URL = 'https://shashl-41ad4-default-rtdb.europe-west1.firebasedatabase.app';  // ← ВСТАВИТЬ СЮДА
+
+/* ─── SPARKS ─── */
+(function(){
+  var c=document.getElementById('sparks'),cols=['#ff6b1a','#f5a623','#fff4aa','#ff3d00'];
+  for(var i=0;i<28;i++){
+    var s=document.createElement('div');s.className='sp';
+    s.style.left=(Math.random()*100)+'%';
+    s.style.width=s.style.height=(2+Math.random()*5)+'px';
+    s.style.setProperty('--dr',(Math.random()*100-50)+'px');
+    s.style.animationDuration=(4+Math.random()*8)+'s';
+    s.style.animationDelay=(Math.random()*6)+'s';
+    s.style.background=cols[~~(Math.random()*4)];
+    c.appendChild(s);
+  }
+})();
+
+/* ─── COUNTDOWN 10 мая 2026, 12:00 ─── */
+function tick(){
+  var now=new Date(), t=new Date(2026,4,10,12,0,0), diff=t-now;
+  function p(n){return(n<10?'0':'')+n;}
+  if(diff<=0){['cd-d','cd-h','cd-m'].forEach(function(id){document.getElementById(id).textContent='00';});return;}
+  document.getElementById('cd-d').textContent=p(Math.floor(diff/86400000));
+  document.getElementById('cd-h').textContent=p(Math.floor(diff%86400000/3600000));
+  document.getElementById('cd-m').textContent=p(Math.floor(diff%3600000/60000));
+}
+tick(); setInterval(tick,30000);
+
+/* ─── MUSIC ─── */
+var playing=false;
+function toggleMusic(){
+  var a=document.getElementById('music'),w=document.getElementById('mwaves');
+  if(!playing){a.play().then(function(){playing=true;document.getElementById('mlbl').textContent='Пауза';w.classList.remove('paused');}).catch(function(){});}
+  else{a.pause();playing=false;document.getElementById('mlbl').textContent='Музыка';w.classList.add('paused');}
+}
+
+/* ─── DB LAYER ─── */
+var LOC='sh26v1';
+function gl(){try{return JSON.parse(localStorage.getItem(LOC)||'{}')}catch(e){return{}}}
+function sl(d){try{localStorage.setItem(LOC,JSON.stringify(d))}catch(e){}}
+
+var hasFirebase = FIREBASE_URL && FIREBASE_URL.length > 5;
+
+function dbGet(path,cb){
+  if(!hasFirebase){cb(null,null);return;}
+  var x=new XMLHttpRequest();
+  x.open('GET',FIREBASE_URL+path+'.json');
+  x.timeout=6000;
+  x.onload=function(){try{cb(null,JSON.parse(x.responseText));}catch(e){cb(e);}};
+  x.onerror=x.ontimeout=function(){cb(new Error('net'));};
+  x.send();
+}
+function dbSet(path,data,cb){
+  if(!hasFirebase){if(cb)cb(null);return;}
+  var x=new XMLHttpRequest();
+  x.open('PUT',FIREBASE_URL+path+'.json');
+  x.setRequestHeader('Content-Type','application/json');
+  x.timeout=6000;
+  x.onload=function(){if(cb)cb(null);};
+  x.onerror=x.ontimeout=function(){if(cb)cb(new Error('net'));};
+  x.send(JSON.stringify(data));
+}
+
+function setSyncOk(ok){
+  var d=document.getElementById('sdot'),t=document.getElementById('stxt');
+  if(!d)return;
+  if(!hasFirebase){d.classList.add('off');t.textContent='Локальный режим — настрой Firebase для общих голосов';document.getElementById('setupBanner').style.display='block';return;}
+  if(ok){d.classList.remove('off');t.textContent='Голоса синхронизированы · обновление каждые 8 сек';}
+  else{d.classList.add('off');t.textContent='Нет связи с сервером — голос сохранён локально';}
+}
+
+/* ─── MEAT POLL ─── */
+var PLABELS=['Только свинину','Свинину и куру','Свинину и печень в сетке','Только куру','Курдюк — подымить'];
+var pSel=[],pVoted=false;
+
+(function(){
+  var loc=gl();
+  if(loc.pv){pVoted=true;var b=document.getElementById('pollBtn');b.disabled=true;b.textContent='✓ Голос учтён';}
+  loadPoll();
+  setSyncOk(hasFirebase);
+})();
+
+function togglePoll(id){
+  if(pVoted)return;
+  var idx=pSel.indexOf(id);
+  if(idx===-1){pSel.push(id);document.querySelector('.popt[data-id="'+id+'"]').classList.add('sel');}
+  else{pSel.splice(idx,1);document.querySelector('.popt[data-id="'+id+'"]').classList.remove('sel');}
+}
+
+function submitPoll(){
+  if(!pSel.length||pVoted)return;
+  var btn=document.getElementById('pollBtn');btn.disabled=true;btn.textContent='Сохраняем...';
+  function save(cur){
+    if(!cur)cur={c:[0,0,0,0,0],t:0};
+    pSel.forEach(function(i){cur.c[i]=(cur.c[i]||0)+1;cur.t=(cur.t||0)+1;});
+    if(hasFirebase){
+      dbSet('/poll',cur,function(e){
+        pVoted=true;btn.textContent='✓ Голос учтён';
+        var loc=gl();loc.pv=true;sl(loc);
+        setSyncOk(!e);renderPoll(cur);
+      });
+    } else {
+      var loc=gl();loc.pv=true;loc.poll=cur;sl(loc);
+      pVoted=true;btn.textContent='✓ Голос учтён';renderPoll(cur);
+    }
+  }
+  if(hasFirebase){dbGet('/poll',function(e,d){save(d);});}
+  else{var loc=gl();save(loc.poll||null);}
+}
+
+function loadPoll(){
+  if(hasFirebase){
+    dbGet('/poll',function(e,d){
+      setSyncOk(!e);
+      renderPoll(d||{c:[0,0,0,0,0],t:0});
+    });
+  } else {
+    var loc=gl();renderPoll(loc.poll||{c:[0,0,0,0,0],t:0});
+  }
+}
+
+function renderPoll(d){
+  var t=d&&d.t||0,html='';
+  PLABELS.forEach(function(lbl,i){
+    var cnt=d&&d.c&&d.c[i]||0,pct=t>0?Math.round(cnt/t*100):0;
+    html+='<div class="rbar"><div class="rbartop"><span class="rbarl">'+lbl+'</span><span class="rbarp">'+pct+'%</span></div>';
+    html+='<div class="rtrack"><div class="rfill" style="width:'+pct+'%"></div></div>';
+    html+='<div style="font-size:11px;color:var(--muted);margin-top:3px">'+cnt+' голос(а)</div></div>';
+  });
+  document.getElementById('pollRes').innerHTML=html;
+  document.getElementById('ptotal').textContent=t+' голос'+(t===1?'':'ов');
+}
+setInterval(loadPoll,8000);
+
+/* ─── MARINADE POLL ─── */
+var MNAMES=['Луковый','Минеральный','На томате','Кефирный','Пивной','Острый кавказский'];
+
+(function(){
+  var loc=gl();
+  if(loc.mv!=null){
+    for(var i=0;i<6;i++){
+      var b=document.querySelector('.mvbtn[data-mid="'+i+'"]');
+      if(b){b.disabled=true;if(i===loc.mv){b.classList.add('voted');b.textContent='✓ Твой выбор';}else b.textContent='Голос учтён';}
+    }
+  }
+  loadMarinades();
+})();
+
+function voteM(id){
+  var loc=gl();if(loc.mv!=null)return;
+  var btn=document.querySelector('.mvbtn[data-mid="'+id+'"]');
+  if(btn){btn.disabled=true;btn.textContent='Сохраняем...';}
+  function save(cur){
+    if(!cur)cur={c:[0,0,0,0,0,0],t:0};
+    cur.c[id]=(cur.c[id]||0)+1;cur.t=(cur.t||0)+1;
+    if(hasFirebase){
+      dbSet('/marinade',cur,function(){
+        loc.mv=id;sl(loc);
+        for(var i=0;i<6;i++){var b=document.querySelector('.mvbtn[data-mid="'+i+'"]');if(b){b.disabled=true;if(i===id){b.classList.add('voted');b.textContent='✓ Твой выбор';}else b.textContent='Голос учтён';}}
+        loadMarinades();
+      });
+    } else {
+      loc.mv=id;loc.marinade=cur;sl(loc);
+      for(var i=0;i<6;i++){var b=document.querySelector('.mvbtn[data-mid="'+i+'"]');if(b){b.disabled=true;if(i===id){b.classList.add('voted');b.textContent='✓ Твой выбор';}else b.textContent='Голос учтён';}}
+      renderMarinades(cur);
+    }
+  }
+  if(hasFirebase){dbGet('/marinade',function(e,d){save(d);});}
+  else{var loc2=gl();save(loc2.marinade||null);}
+}
+
+function loadMarinades(){
+  if(hasFirebase){
+    dbGet('/marinade',function(e,d){renderMarinades(d||{c:[0,0,0,0,0,0],t:0});});
+  } else {
+    var loc=gl();renderMarinades(loc.marinade||{c:[0,0,0,0,0,0],t:0});
+  }
+}
+
+function renderMarinades(d){
+  var t=d&&d.t||0;
+  for(var i=0;i<6;i++){
+    var el=document.getElementById('mr'+i);if(!el)continue;
+    var cnt=d&&d.c&&d.c[i]||0,pct=t>0?Math.round(cnt/t*100):0;
+    el.innerHTML='<div class="rtrack"><div class="rfill" style="width:'+pct+'%"></div></div><div class="mresult-info"><span>'+cnt+' голос(а)</span><span>'+pct+'%</span></div>';
+  }
+}
+setInterval(loadMarinades,8000);
+
+/* ─── SCROLL REVEAL ─── */
+var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+</script>
+</body>
+</html>
